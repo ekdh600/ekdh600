@@ -1,0 +1,41 @@
+version: "3"
+
+services:
+  webserver:
+    image: wordpress
+    deploy:
+      replicas: 1
+#      placement:
+#        constraints: [node.hostname == worker03]
+#      restart_policy:
+#        condition: on-failure
+#        max_attempts: 99
+    ports: 
+      - "6250:80"
+#      - "6251:433"
+
+    depends_on:
+      - dbserver
+    environment:
+      WORDPRESS_DB_HOST: dbserver:3306
+      WORDPRESS_DB_PASSWORD: test123
+    networks:
+      - wp_web
+ 
+  dbserver:
+    image: mariadb
+#    deploy:
+#      replicas: 1
+    ports:
+      - "3306:3306"
+#    volumes:
+#      - /mysql:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=test123
+      - MYSQL_DATABASE=dbserver
+      - MYSQL_USER=dbserver
+      - MYSQL_PASSWORD=dbserver
+    networks:
+      - wp_web
+networks:
+  wp_web:
